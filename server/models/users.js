@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+import Link from "./links.js";
 const UserSchema = new mongoose.Schema(
   {
     username: {
@@ -35,6 +35,10 @@ const UserSchema = new mongoose.Schema(
 UserSchema.pre("save", async function () {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+});
+
+UserSchema.pre("remove", { document: true, query: false }, async function () {
+  await Link.deleteMany({ user: this._id });
 });
 
 UserSchema.methods.hashPassword = async function (password) {
