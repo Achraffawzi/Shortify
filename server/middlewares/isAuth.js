@@ -1,5 +1,5 @@
-import jwt from "jsonwebtoken";
-import ApiError from "../classes/ApiError.js";
+const jwt = require("jsonwebtoken");
+const ApiError = require("../classes/ApiError.js");
 
 const isAuth = (req, res, next) => {
   try {
@@ -27,4 +27,4 @@ const isAuth = (req, res, next) => {
   }
 };
 
-export default isAuth;
+module.exports = isAuth;

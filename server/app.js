@@ -1,25 +1,45 @@
-import express from "express";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import rateLimit from "express-rate-limit";
-import { connectDB } from "./config/db.js";
-import { handleApiError } from "./middlewares/error-handler.js";
-import ApiError from "./classes/ApiError.js";
-import Link from "./models/links.js";
-import authRoutes from "./routes/auth.js";
-import linkRoutes from "./routes/links.js";
-import userRoutes from "./routes/users.js";
+const express = require("express");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const passport = require("passport");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const rateLimit = require("express-rate-limit");
+const { connectDB } = require("./config/db.js");
+const { handleApiError } = require("./middlewares/error-handler.js");
+const ApiError = require("./classes/ApiError.js");
+const Link = require("./models/links.js");
+const authRoutes = require("./routes/auth.js");
+const oauthRoutes = require("./routes/oauth.js");
+const linkRoutes = require("./routes/links.js");
+const userRoutes = require("./routes/users.js");
 
 dotenv.config();
 const app = express();
+const passportSetup = require("./config/passport.js");
+const { resetPasswordPOST } = require("./controllers/auth.js");
 
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extends: true }));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 24 * 60 * 60 * 1000, httpOnly: true },
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+    }),
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000,
-  max: 2,
+  max: 50,
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -29,6 +49,7 @@ app.use(limiter);
 app.use("/api/auth", authRoutes);
 app.use("/api/links", linkRoutes);
 app.use("/api/users", userRoutes);
+app.use("/oauth", oauthRoutes);
 app.get("/:shortid", async (req, res, next) => {
   try {
     const { shortid } = req.params;

@@ -1,8 +1,8 @@
-import express from "express";
+const express = require("express");
 const router = express.Router();
-import isAuth from "../middlewares/isAuth.js";
-import { removeUser } from "../controllers/users.js";
+const isAuth = require("../middlewares/isAuth.js");
+const { removeUser } = require("../controllers/users.js");
 
 router.delete("/:id", isAuth, removeUser);
 
-export default router;
+module.exports = router;

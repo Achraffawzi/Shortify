@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import Link from "./links.js";
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const Link = require("./links.js");
 const UserSchema = new mongoose.Schema(
   {
     username: {
@@ -25,6 +25,7 @@ const UserSchema = new mongoose.Schema(
     isConfirmed: {
       type: Boolean,
       default: false,
+      required: false,
     },
     links: [{ type: mongoose.Types.ObjectId, ref: "link" }],
   },
@@ -32,10 +33,13 @@ const UserSchema = new mongoose.Schema(
 );
 
 // hashing the password
-UserSchema.pre("save", async function () {
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-});
+// UserSchema.pre("save", async function () {
+//   console.log("password : ", this.password);
+//   if (this.password !== "" || this.password !== undefined || this.password) {
+//     const salt = await bcrypt.genSalt(10);
+//     this.password = await bcrypt.hash(this.password, salt);
+//   }
+// });
 
 UserSchema.pre("remove", { document: true, query: false }, async function () {
   await Link.deleteMany({ user: this._id });
@@ -54,4 +58,4 @@ UserSchema.methods.genToken = function (payload, secret, expiration) {
   return jwt.sign(payload, secret, { expiresIn: expiration });
 };
 
-export default mongoose.model("user", UserSchema);
+module.exports = mongoose.model("user", UserSchema);

@@ -1,6 +1,6 @@
-import User from "../models/users.js";
+const User = require("../models/users.js");
 
-export const removeUser = async (req, res, next) => {
+const removeUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     await User.remove({ _id: id });
@@ -10,3 +10,5 @@ export const removeUser = async (req, res, next) => {
     next(e);
   }
 };
+
+module.exports = { removeUser };

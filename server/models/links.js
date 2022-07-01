@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import User from "./users.js";
+const mongoose = require("mongoose");
+const User = require("./users.js");
 
 const LinkSchema = new mongoose.Schema({
   long: {
@@ -44,4 +44,4 @@ LinkSchema.pre("remove", { document: true, query: false }, async function () {
   });
 });
 
-export default mongoose.model("link", LinkSchema);
+module.exports = mongoose.model("link", LinkSchema);

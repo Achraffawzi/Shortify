@@ -1,6 +1,6 @@
-import express from "express";
+const express = require("express");
 const router = express.Router();
-import {
+const {
   signup,
   confirmAccount,
   login,
@@ -9,8 +9,9 @@ import {
   resetPasswordGET,
   resetPasswordPOST,
   genAccessToken,
-} from "../controllers/auth.js";
-import isAuth from "../middlewares/isAuth.js";
+} = require("../controllers/auth.js");
+
+const isAuth = require("../middlewares/isAuth.js");
 
 router.post("/signup", signup);
 router.post("/login", login);
@@ -21,4 +22,4 @@ router.post("/resetpassword/:id/:token", resetPasswordPOST);
 router.get("/confirmaccount/:id/:token", confirmAccount);
 router.post("/changepassword/:id", isAuth, changePassword);
 
-export default router;
+module.exports = router;

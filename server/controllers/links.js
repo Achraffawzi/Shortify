@@ -1,8 +1,8 @@
-import ApiError from "../classes/ApiError.js";
-import shortid from "shortid";
-import Link from "../models/links.js";
+const ApiError = require("../classes/ApiError.js");
+const shortid = require("shortid");
+const Link = require("../models/links.js");
 
-export const createLink = async (req, res, next) => {
+const createLink = async (req, res, next) => {
   try {
     const { longUrl } = req.body;
     if (!longUrl) {
@@ -26,7 +26,7 @@ export const createLink = async (req, res, next) => {
   }
 };
 
-export const deleteLink = async (req, res, next) => {
+const deleteLink = async (req, res, next) => {
   try {
     const { id } = req.params;
     if (!id) {
@@ -45,3 +45,5 @@ export const deleteLink = async (req, res, next) => {
     next(e);
   }
 };
+
+module.exports = { createLink, deleteLink };

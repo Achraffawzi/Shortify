@@ -1,8 +1,8 @@
-import ApiError from "../classes/ApiError.js";
-import mongoose from "mongoose";
-import jwt from "jsonwebtoken";
+const ApiError = require("../classes/ApiError.js");
+const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
-export const handleApiError = (e, req, res, next) => {
+const handleApiError = (e, req, res, next) => {
   console.log(e);
 
   if (e instanceof ApiError) {
@@ -18,7 +18,7 @@ export const handleApiError = (e, req, res, next) => {
 
   if (e instanceof jwt.TokenExpiredError) {
     return res.status(401).json({
-      message: "Your session might be closed",
+      message: "Your session might be expired, please login again",
     });
   }
 
@@ -26,3 +26,5 @@ export const handleApiError = (e, req, res, next) => {
     message: "Something went wrong",
   });
 };
+
+module.exports = { handleApiError };

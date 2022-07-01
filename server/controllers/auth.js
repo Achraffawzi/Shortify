@@ -1,12 +1,12 @@
-import jwt from "jsonwebtoken";
-import ApiError from "../classes/ApiError.js";
-import User from "../models/users.js";
-import {
+const jwt = require("jsonwebtoken");
+const ApiError = require("../classes/ApiError.js");
+const User = require("../models/users.js");
+const {
   sendConfirmationEmail,
   sendResetPasswordEmail,
-} from "../services/emails.js";
+} = require("../services/emails.js");
 
-export const signup = async (req, res, next) => {
+const signup = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
 
@@ -19,7 +19,14 @@ export const signup = async (req, res, next) => {
       throw ApiError.BadRequest("A user with this email already exist");
     }
 
-    user = await User.create({ ...req.body, links: [] });
+    // hash the password
+    const hashedPassword = await user.hashPassword(password);
+
+    user = await User.create({
+      ...req.body,
+      password: hashedPassword,
+      links: [],
+    });
 
     sendConfirmationEmail({ userId: user._id, username, email });
 
@@ -29,7 +36,7 @@ export const signup = async (req, res, next) => {
   }
 };
 
-export const confirmAccount = async (req, res, next) => {
+const confirmAccount = async (req, res, next) => {
   try {
     const { token, id } = req.params;
     const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
@@ -46,7 +53,7 @@ export const confirmAccount = async (req, res, next) => {
   }
 };
 
-export const login = async (req, res, next) => {
+const login = async (req, res, next) => {
   try {
     if (req.body.email == undefined || req.body.password == undefined) {
       throw ApiError.BadRequest("Please Provide all the required fields");
@@ -98,7 +105,12 @@ export const login = async (req, res, next) => {
   }
 };
 
-export const changePassword = async (req, res, next) => {
+const redirect = async (req, res, next) => {
+  console.log("from redirect", req.user);
+  res.send("Google Auth Redirect");
+};
+
+const changePassword = async (req, res, next) => {
   try {
     let user = await User.findById(req.params.id);
 
@@ -132,7 +144,7 @@ export const changePassword = async (req, res, next) => {
   }
 };
 
-export const forgotPassword = async (req, res, next) => {
+const forgotPassword = async (req, res, next) => {
   try {
     if (req.body.email == undefined || req.body.email == null) {
       throw ApiError.BadRequest("please provide the email");
@@ -155,7 +167,7 @@ export const forgotPassword = async (req, res, next) => {
   }
 };
 
-export const resetPasswordGET = async (req, res, next) => {
+const resetPasswordGET = async (req, res, next) => {
   try {
     const { token, id } = req.params;
 
@@ -178,7 +190,7 @@ export const resetPasswordGET = async (req, res, next) => {
   }
 };
 
-export const resetPasswordPOST = async (req, res, next) => {
+const resetPasswordPOST = async (req, res, next) => {
   try {
     const { newPassword, confirmNewPassword } = req.body;
     const { id, token } = req.params;
@@ -209,7 +221,7 @@ export const resetPasswordPOST = async (req, res, next) => {
   }
 };
 
-export const genAccessToken = async (req, res, next) => {
+const genAccessToken = async (req, res, next) => {
   try {
     const { accessToken, refreshToken } = req.body;
     const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
@@ -233,4 +245,16 @@ export const genAccessToken = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
+};
+
+module.exports = {
+  signup,
+  confirmAccount,
+  login,
+  redirect,
+  changePassword,
+  forgotPassword,
+  resetPasswordGET,
+  resetPasswordPOST,
+  genAccessToken,
 };

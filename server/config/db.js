@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
-export const connectDB = async (uri) => {
+const connectDB = async (uri) => {
   try {
     mongoose.connect(uri, {
       useNewUrlParser: true,
@@ -10,3 +10,5 @@ export const connectDB = async (uri) => {
     console.log(e);
   }
 };
+
+module.exports = { connectDB };

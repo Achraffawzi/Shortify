@@ -1,9 +1,9 @@
-import express from "express";
+const express = require("express");
 const router = express.Router();
-import { createLink, deleteLink } from "../controllers/links.js";
-import isAuth from "../middlewares/isAuth.js";
+const { createLink, deleteLink } = require("../controllers/links.js");
+const isAuth = require("../middlewares/isAuth.js");
 
 router.post("/", isAuth, createLink);
 router.delete("/:id", isAuth, deleteLink);
 
-export default router;
+module.exports = router;

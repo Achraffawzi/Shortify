@@ -1,7 +1,7 @@
-import nodemailer from "nodemailer";
-import jwt from "jsonwebtoken";
+const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
 
-export const sendConfirmationEmail = (user) => {
+const sendConfirmationEmail = (user) => {
   const transport = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -33,7 +33,7 @@ export const sendConfirmationEmail = (user) => {
   });
 };
 
-export const sendResetPasswordEmail = (user) => {
+const sendResetPasswordEmail = (user) => {
   const transport = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -64,3 +64,5 @@ export const sendResetPasswordEmail = (user) => {
     else console.log("email was sent successfully " + data);
   });
 };
+
+module.exports = { sendConfirmationEmail, sendResetPasswordEmail };

@@ -1,0 +1,9 @@
+.containerflex {
+  width: 500px;
+  max-width: 1000px;
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; */
+}
